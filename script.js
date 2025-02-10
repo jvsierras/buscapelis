@@ -13,7 +13,10 @@ const movieTitle = document.getElementById("movie-title");
 // Función para buscar películas
 async function searchMovies(query) {
     try {
-        const response = await fetch(`${BASE_URL}/search/movie?api_key=${API_KEY}&query=${query}`);
+        const response = await fetch(`${BASE_URL}/search/movie?api_key=${API_KEY}&query=${encodeURIComponent(query)}`);
+        if (!response.ok) {
+            throw new Error(`Error HTTP: ${response.status}`);
+        }
         const data = await response.json();
 
         if (data.results.length > 0) {
@@ -23,6 +26,7 @@ async function searchMovies(query) {
         }
     } catch (error) {
         console.error("Error al buscar películas:", error);
+        alert("Hubo un error al buscar películas. Por favor, intenta nuevamente.");
     }
 }
 
@@ -37,7 +41,7 @@ function displayMovies(movies) {
         const movieImage = document.createElement("img");
         movieImage.src = movie.poster_path
             ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
-            : "assets/placeholder.jpg";
+            : "assets/placeholder.jpg"; // Asegúrate de que esta ruta sea correcta
         movieImage.alt = movie.title;
 
         const movieName = document.createElement("p");
@@ -57,6 +61,9 @@ function displayMovies(movies) {
 async function playTrailer(movieId) {
     try {
         const response = await fetch(`${BASE_URL}/movie/${movieId}/videos?api_key=${API_KEY}`);
+        if (!response.ok) {
+            throw new Error(`Error HTTP: ${response.status}`);
+        }
         const data = await response.json();
 
         if (data.results.length > 0) {
@@ -73,6 +80,7 @@ async function playTrailer(movieId) {
         }
     } catch (error) {
         console.error("Error al obtener el trailer:", error);
+        alert("Hubo un error al cargar el trailer. Por favor, intenta nuevamente.");
     }
 }
 
