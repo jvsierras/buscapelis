@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buscar Películas Online</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>Buscador de Películas</h1>
+        <p>Encuentra y reproduce tus películas favoritas en línea</p>
+    </header>
+
+    <main>
+        <section class="search-section">
+            <input type="text" id="search-input" placeholder="Buscar película..." />
+            <button id="search-button">Buscar</button>
+        </section>
+
+        <section class="results-section" id="results-section">
+            <h2>Resultados de Búsqueda</h2>
+            <div id="movie-list"></div>
+        </section>
+
+        <section class="player-section" id="player-section" style="display: none;">
+            <h2 id="movie-title">Reproduciendo Película</h2>
+            <video id="movie-player" controls width="100%" poster="assets/placeholder.jpg">
+                Tu navegador no soporta el elemento de video.
+            </video>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2023 Buscador de Películas. Todos los derechos reservados.</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
