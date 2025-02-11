@@ -115,6 +115,25 @@ main {
     margin-top: 1rem;
 }
 
+#movie-info {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 1rem;
+}
+
+#info-poster {
+    width: 200px;
+    height: auto;
+    margin-right: 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+}
+
+#info-details {
+    text-align: left;
+}
+
 footer {
     text-align: center;
     padding: 1rem 0;
