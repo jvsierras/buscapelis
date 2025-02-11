@@ -79,52 +79,46 @@ function displayMovies(movies) {
         movieItem.appendChild(movieImage);
         movieItem.appendChild(movieName);
 
-        // Agregar evento de clic para abrir la información de la película
-        movieItem.addEventListener("click", () => openMovieInfo(movie.id));
+        // Agregar evento de clic para abrir la información de la película y buscar el trailer
+        movieItem.addEventListener("click", () => openMovieInfoAndTrailer(movie.id));
 
         movieList.appendChild(movieItem);
     });
 }
 
-// Función para abrir la información de una película
-async function openMovieInfo(movieId) {
+// Función para abrir la información de una película y buscar el trailer
+async function openMovieInfoAndTrailer(movieId) {
     try {
-        const response = await fetch(`${BASE_URL}/movie/${movieId}?api_key=${API_KEY}&language=es-MX`);
-        if (!response.ok) {
-            throw new Error(`Error HTTP: ${response.status}`);
+        // Obtener información de la película
+        const movieResponse = await fetch(`${BASE_URL}/movie/${movieId}?api_key=${API_KEY}&language=es-MX`);
+        if (!movieResponse.ok) {
+            throw new Error(`Error HTTP: ${movieResponse.status}`);
         }
-        const data = await response.json();
+        const movieData = await movieResponse.json();
 
         // Mostrar la información en la ventana modal
-        infoMovieTitle.textContent = data.title;
-        infoPoster.src = data.poster_path
-            ? `https://image.tmdb.org/t/p/w500${data.poster_path}`
+        infoMovieTitle.textContent = movieData.title;
+        infoPoster.src = movieData.poster_path
+            ? `https://image.tmdb.org/t/p/w500${movieData.poster_path}`
             : "assets/placeholder.jpg";
-        infoOverview.textContent = data.overview || "Sin sinopsis disponible.";
-        infoReleaseDate.textContent = data.release_date || "No disponible";
-        infoGenres.textContent = data.genres.map((genre) => genre.name).join(", ") || "No disponible";
-        infoRuntime.textContent = data.runtime || "No disponible";
-        infoPopularity.textContent = data.popularity || "No disponible";
-        infoOriginalLanguage.textContent = data.original_language || "No disponible";
+        infoOverview.textContent = movieData.overview || "Sin sinopsis disponible.";
+        infoReleaseDate.textContent = movieData.release_date || "No disponible";
+        infoGenres.textContent = movieData.genres.map((genre) => genre.name).join(", ") || "No disponible";
+        infoRuntime.textContent = movieData.runtime || "No disponible";
+        infoPopularity.textContent = movieData.popularity || "No disponible";
+        infoOriginalLanguage.textContent = movieData.original_language || "No disponible";
 
         infoModal.style.display = "block";
-    } catch (error) {
-        console.error("Error al obtener la información de la película:", error);
-        alert("Hubo un error al cargar la información de la película. Por favor, intenta nuevamente.");
-    }
-}
 
-// Función para obtener el trailer de una película
-async function playTrailer(movieId) {
-    try {
-        const response = await fetch(`${BASE_URL}/movie/${movieId}/videos?api_key=${API_KEY}&language=es-MX`);
-        if (!response.ok) {
-            throw new Error(`Error HTTP: ${response.status}`);
+        // Buscar el trailer en español
+        const videoResponse = await fetch(`${BASE_URL}/movie/${movieId}/videos?api_key=${API_KEY}&language=es-MX`);
+        if (!videoResponse.ok) {
+            throw new Error(`Error HTTP: ${videoResponse.status}`);
         }
-        const data = await response.json();
+        const videoData = await videoResponse.json();
 
-        if (data.results.length > 0) {
-            const trailer = data.results.find((video) => video.type === "Trailer" && video.iso_639_1 === "es");
+        if (videoData.results.length > 0) {
+            const trailer = videoData.results.find((video) => video.type === "Trailer" && video.iso_639_1 === "es");
             if (trailer) {
                 modalMovieTitle.textContent = `Trailer: ${trailer.name}`;
                 modalMoviePlayer.src = `https://www.youtube.com/embed/${trailer.key}`;
@@ -136,8 +130,8 @@ async function playTrailer(movieId) {
             alert("No se encontró ningún trailer para esta película.");
         }
     } catch (error) {
-        console.error("Error al obtener el trailer:", error);
-        alert("Hubo un error al cargar el trailer. Por favor, intenta nuevamente.");
+        console.error("Error al obtener la información o el trailer de la película:", error);
+        alert("Hubo un error al cargar la información o el trailer de la película. Por favor, intenta nuevamente.");
     }
 }
 
