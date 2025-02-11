@@ -6,9 +6,26 @@ const BASE_URL = "https://api.themoviedb.org/3";
 const searchInput = document.getElementById("search-input");
 const searchButton = document.getElementById("search-button");
 const movieList = document.getElementById("movie-list");
-const playerSection = document.getElementById("player-section");
-const moviePlayer = document.getElementById("movie-player");
-const movieTitle = document.getElementById("movie-title");
+const resultsTitle = document.getElementById("results-title");
+const trailerModal = document.getElementById("trailer-modal");
+const closeModal = document.querySelector(".close");
+const modalMoviePlayer = document.getElementById("modal-movie-player");
+const modalMovieTitle = document.getElementById("modal-movie-title");
+
+// Función para cargar películas recientes al iniciar la página
+async function loadRecentMovies() {
+    try {
+        const response = await fetch(`${BASE_URL}/movie/popular?api_key=${API_KEY}`);
+        if (!response.ok) {
+            throw new Error(`Error HTTP: ${response.status}`);
+        }
+        const data = await response.json();
+        displayMovies(data.results);
+    } catch (error) {
+        console.error("Error al cargar películas recientes:", error);
+        alert("Hubo un error al cargar las películas recientes. Por favor, intenta nuevamente.");
+    }
+}
 
 // Función para buscar películas
 async function searchMovies(query) {
@@ -20,6 +37,7 @@ async function searchMovies(query) {
         const data = await response.json();
 
         if (data.results.length > 0) {
+            resultsTitle.textContent = `Resultados de Búsqueda: "${query}"`;
             displayMovies(data.results);
         } else {
             alert("No se encontraron películas.");
@@ -69,9 +87,9 @@ async function playTrailer(movieId) {
         if (data.results.length > 0) {
             const trailer = data.results.find((video) => video.type === "Trailer");
             if (trailer) {
-                movieTitle.textContent = `Reproduciendo Trailer: ${trailer.name}`;
-                moviePlayer.src = `https://www.youtube.com/embed/${trailer.key}`;
-                playerSection.style.display = "block";
+                modalMovieTitle.textContent = `Trailer: ${trailer.name}`;
+                modalMoviePlayer.src = `https://www.youtube.com/embed/${trailer.key}`;
+                trailerModal.style.display = "block";
             } else {
                 alert("No se encontró ningún trailer para esta película.");
             }
@@ -84,6 +102,20 @@ async function playTrailer(movieId) {
     }
 }
 
+// Evento para cerrar la ventana modal
+closeModal.addEventListener("click", () => {
+    trailerModal.style.display = "none";
+    modalMoviePlayer.src = ""; // Detener el video
+});
+
+// Cerrar la ventana modal al hacer clic fuera de ella
+window.addEventListener("click", (event) => {
+    if (event.target === trailerModal) {
+        trailerModal.style.display = "none";
+        modalMoviePlayer.src = ""; // Detener el video
+    }
+});
+
 // Evento de búsqueda
 searchButton.addEventListener("click", () => {
     const query = searchInput.value.trim();
@@ -92,4 +124,9 @@ searchButton.addEventListener("click", () => {
     } else {
         alert("Por favor, ingresa un título para buscar.");
     }
+});
+
+// Cargar películas recientes al iniciar la página
+document.addEventListener("DOMContentLoaded", () => {
+    loadRecentMovies();
 });
