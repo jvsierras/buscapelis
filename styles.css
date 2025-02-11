@@ -87,12 +87,14 @@ main {
 .modal-content {
     position: relative;
     background-color: #fff;
-    margin: 10% auto;
+    margin: 5% auto;
     padding: 20px;
     border: 1px solid #888;
     width: 80%;
-    max-width: 900px;
+    max-width: 1200px;
     text-align: center;
+    overflow-y: auto;
+    max-height: 90vh;
 }
 
 .close {
@@ -111,27 +113,37 @@ main {
     text-decoration: none;
 }
 
-#modal-movie-player {
+#movie-info-and-trailer {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
     margin-top: 1rem;
 }
 
 #movie-info {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-top: 1rem;
+    flex: 1;
+    margin-right: 20px;
 }
 
 #info-poster {
     width: 200px;
     height: auto;
-    margin-right: 20px;
+    margin-bottom: 10px;
     border: 1px solid #ddd;
     border-radius: 8px;
 }
 
 #info-details {
     text-align: left;
+}
+
+#trailer-container {
+    flex: 1;
+    text-align: center;
+}
+
+#modal-movie-player {
+    margin-top: 1rem;
 }
 
 footer {
