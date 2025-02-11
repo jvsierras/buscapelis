@@ -92,7 +92,7 @@ async function openMovieInfoAndTrailer(movieId) {
         // Obtener información de la película
         const movieResponse = await fetch(`${BASE_URL}/movie/${movieId}?api_key=${API_KEY}&language=es-MX`);
         if (!movieResponse.ok) {
-            throw new Error(`Error HTTP: ${movieResponse.status}`);
+            throw new Error(`Error HTTP al obtener la película: ${movieResponse.status}`);
         }
         const movieData = await movieResponse.json();
 
@@ -113,25 +113,25 @@ async function openMovieInfoAndTrailer(movieId) {
         // Buscar el trailer en español
         const videoResponse = await fetch(`${BASE_URL}/movie/${movieId}/videos?api_key=${API_KEY}&language=es-MX`);
         if (!videoResponse.ok) {
-            throw new Error(`Error HTTP: ${videoResponse.status}`);
+            throw new Error(`Error HTTP al obtener el trailer: ${videoResponse.status}`);
         }
         const videoData = await videoResponse.json();
 
         if (videoData.results.length > 0) {
             const trailer = videoData.results.find((video) => video.type === "Trailer" && video.iso_639_1 === "es");
             if (trailer) {
-                modalMovieTitle.textContent = `Trailer: ${trailer.name}`;
                 modalMoviePlayer.src = `https://www.youtube.com/embed/${trailer.key}`;
-                trailerModal.style.display = "block";
             } else {
+                modalMoviePlayer.src = ""; // Limpiar el iframe si no hay trailer
                 alert("No se encontró ningún trailer en español para esta película.");
             }
         } else {
+            modalMoviePlayer.src = ""; // Limpiar el iframe si no hay trailer
             alert("No se encontró ningún trailer para esta película.");
         }
     } catch (error) {
-        console.error("Error al obtener la información o el trailer de la película:", error);
-        alert("Hubo un error al cargar la información o el trailer de la película. Por favor, intenta nuevamente.");
+        console.error("Error:", error.message);
+        alert(`Ocurrió un error: ${error.message}`);
     }
 }
 
