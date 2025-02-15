@@ -41,6 +41,17 @@ async function loadRecentMovies() {
 // Función para buscar películas
 async function searchMovies(query) {
     try {
+        // Validar si es un ID de IMDb (comienza con "tt" seguido de números)
+        if (/^tt\d+$/.test(query)) {
+            return searchByImdbId(query);
+        }
+
+        // Validar si es un ID numérico de TMDb
+        if (/^\d+$/.test(query)) {
+            return searchByTmdbId(query);
+        }
+
+        // Si no es un ID, asumimos que es una búsqueda por título
         const response = await fetch(`${BASE_URL}/search/movie?api_key=${API_KEY}&query=${encodeURIComponent(query)}&language=es-MX`);
         if (!response.ok) {
             throw new Error(`Error HTTP: ${response.status}`);
@@ -56,6 +67,45 @@ async function searchMovies(query) {
     } catch (error) {
         console.error("Error al buscar películas:", error);
         alert("Hubo un error al buscar películas. Por favor, intenta nuevamente.");
+    }
+}
+
+// Función para buscar películas por ID de IMDb
+async function searchByImdbId(imdbId) {
+    try {
+        const response = await fetch(`${BASE_URL}/find/${imdbId}?api_key=${API_KEY}&external_source=imdb_id&language=es-MX`);
+        if (!response.ok) {
+            throw new Error(`Error HTTP: ${response.status}`);
+        }
+        const data = await response.json();
+
+        if (data.movie_results && data.movie_results.length > 0) {
+            const movie = data.movie_results[0];
+            resultsTitle.textContent = `Resultado para IMDb ID: ${imdbId}`;
+            displayMovies([movie]); // Mostrar solo la película encontrada
+        } else {
+            alert("No se encontró ninguna película con este ID de IMDb.");
+        }
+    } catch (error) {
+        console.error("Error al buscar por ID de IMDb:", error);
+        alert("Hubo un error al buscar por ID de IMDb. Por favor, intenta nuevamente.");
+    }
+}
+
+// Función para buscar películas por ID de TMDb
+async function searchByTmdbId(tmdbId) {
+    try {
+        const response = await fetch(`${BASE_URL}/movie/${tmdbId}?api_key=${API_KEY}&language=es-MX`);
+        if (!response.ok) {
+            throw new Error(`Error HTTP: ${response.status}`);
+        }
+        const movie = await response.json();
+
+        resultsTitle.textContent = `Resultado para TMDb ID: ${tmdbId}`;
+        displayMovies([movie]); // Mostrar solo la película encontrada
+    } catch (error) {
+        console.error("Error al buscar por ID de TMDb:", error);
+        alert("Hubo un error al buscar por ID de TMDb. Por favor, intenta nuevamente.");
     }
 }
 
@@ -161,7 +211,7 @@ searchButton.addEventListener("click", () => {
     if (query) {
         searchMovies(query);
     } else {
-        alert("Por favor, ingresa un título para buscar.");
+        alert("Por favor, ingresa un título, ID de IMDb o ID de TMDb para buscar.");
     }
 });
 
